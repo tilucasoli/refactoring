@@ -32,10 +32,12 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     return result;
   }
 
+  Play? playFor(Performance aPerformance) => plays[aPerformance.playID];
+  
   final format = NumberFormat.currency(locale: 'en-US', symbol: 'USD');
 
   for (var perf in invoice.performances) {
-    var play = plays[perf.playID];
+    var play = playFor(perf);
 
     final thisAmount = amountFor(play, perf);
     // add volume credits
