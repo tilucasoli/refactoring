@@ -37,16 +37,14 @@ String statement(Invoice invoice, Map<String, Play> plays) {
   final format = NumberFormat.currency(locale: 'en-US', symbol: 'USD');
 
   for (var perf in invoice.performances) {
-    var play = playFor(perf);
-
-    final thisAmount = amountFor(play, perf);
+    final thisAmount = amountFor(playFor(perf), perf);
     // add volume credits
     volumeCredits += max(perf.audience - 30, 0);
     // add extra credit for every ten comedy attendees
-    if ('comedy' == play?.type) volumeCredits += (perf.audience / 5).floor();
+    if ('comedy' == playFor(perf)?.type) volumeCredits += (perf.audience / 5).floor();
     // print line for this order
     result +=
-        ' ${play?.name}: ${format.format(thisAmount / 100)} (${perf.audience} seats)\n';
+        ' ${playFor(perf)?.name}: ${format.format(thisAmount / 100)} (${perf.audience} seats)\n';
     totalAmount += thisAmount;
   }
   result += 'Amount owed is ${format.format(totalAmount / 100)}\n';
