@@ -41,16 +41,19 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     return result;
   }
 
-  final format = NumberFormat.currency(locale: 'en-US', symbol: 'USD');
-
   for (var perf in invoice.performances) {
     volumeCredits += volumeCreditsFor(perf);
 
     result +=
-        ' ${playFor(perf)?.name}: ${format.format(amountFor(perf) / 100)} (${perf.audience} seats)\n';
+        ' ${playFor(perf)?.name}: ${formatToUSD(amountFor(perf) / 100)} (${perf.audience} seats)\n';
     totalAmount += amountFor(perf);
   }
-  result += 'Amount owed is ${format.format(totalAmount / 100)}\n';
+  result += 'Amount owed is ${formatToUSD(totalAmount / 100)}\n';
   result += 'You earned $volumeCredits credits\n';
   return result;
+}
+
+String formatToUSD(dynamic number) {
+  var formatter = NumberFormat.currency(locale: 'en-US', symbol: 'USD');
+  return formatter.format(number);
 }
