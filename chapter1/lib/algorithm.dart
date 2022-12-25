@@ -43,8 +43,8 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     if ('comedy' == playFor(perf)?.type) volumeCredits += (perf.audience / 5).floor();
 
     result +=
-        ' ${playFor(perf)?.name}: ${format.format(thisAmount / 100)} (${perf.audience} seats)\n';
-    totalAmount += thisAmount;
+        ' ${playFor(perf)?.name}: ${format.format(amountFor(perf) / 100)} (${perf.audience} seats)\n';
+    totalAmount += amountFor(perf);
   }
   result += 'Amount owed is ${format.format(totalAmount / 100)}\n';
   result += 'You earned $volumeCredits credits\n';
