@@ -11,25 +11,25 @@ String statement(Invoice invoice, Map<String, Play> plays) {
 
   Play? playFor(Performance aPerformance) => plays[aPerformance.playID];
 
-  int amountFor(Performance perf) {
+  int amountFor(Performance aPerfomance) {
     int result = 0;
     
-    switch (playFor(perf)?.type) {
+    switch (playFor(aPerfomance)?.type) {
       case 'tragedy':
         result = 40000;
-        if (perf.audience > 30) {
-          result += 1000 * (perf.audience - 30);
+        if (aPerfomance.audience > 30) {
+          result += 1000 * (aPerfomance.audience - 30);
         }
         break;
       case 'comedy':
         result = 30000;
-        if (perf.audience > 20) {
-          result += 10000 + 500 * (perf.audience - 20);
+        if (aPerfomance.audience > 20) {
+          result += 10000 + 500 * (aPerfomance.audience - 20);
         }
         break;
       default:
-        result += 300 * perf.audience;
-        throw Exception('unknown type: ${playFor(perf)?.type}');
+        result += 300 * aPerfomance.audience;
+        throw Exception('unknown type: ${playFor(aPerfomance)?.type}');
     }
     return result;
   }
