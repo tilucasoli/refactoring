@@ -10,6 +10,7 @@ String statement(Invoice invoice, Map<String, Play> plays) {
   String result = ' Statement for ${invoice.customer}\n';
 
   Play? playFor(Performance aPerformance) => plays[aPerformance.playID];
+
   int amountFor(Performance perf) {
     int result = 0;
     
@@ -36,12 +37,11 @@ String statement(Invoice invoice, Map<String, Play> plays) {
   final format = NumberFormat.currency(locale: 'en-US', symbol: 'USD');
 
   for (var perf in invoice.performances) {
-    final thisAmount = amountFor(perf);
-    // add volume credits
+
     volumeCredits += max(perf.audience - 30, 0);
-    // add extra credit for every ten comedy attendees
+
     if ('comedy' == playFor(perf)?.type) volumeCredits += (perf.audience / 5).floor();
-    // print line for this order
+
     result +=
         ' ${playFor(perf)?.name}: ${format.format(thisAmount / 100)} (${perf.audience} seats)\n';
     totalAmount += thisAmount;
