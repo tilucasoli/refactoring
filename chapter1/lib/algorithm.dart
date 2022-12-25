@@ -13,7 +13,7 @@ String statement(Invoice invoice, Map<String, Play> plays) {
 
   int amountFor(Performance aPerfomance) {
     int result = 0;
-    
+
     switch (playFor(aPerfomance)?.type) {
       case 'tragedy':
         result = 40000;
@@ -33,14 +33,18 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     }
     return result;
   }
-  
+
+  int volumeCreditsFor(Performance perf) {
+    int result = 0;
+    result += max(perf.audience - 30, 0);
+    if ('comedy' == playFor(perf)?.type) result += (perf.audience / 5).floor();
+    return result;
+  }
+
   final format = NumberFormat.currency(locale: 'en-US', symbol: 'USD');
 
   for (var perf in invoice.performances) {
-
-    volumeCredits += max(perf.audience - 30, 0);
-
-    if ('comedy' == playFor(perf)?.type) volumeCredits += (perf.audience / 5).floor();
+    volumeCredits += volumeCreditsFor(perf);
 
     result +=
         ' ${playFor(perf)?.name}: ${format.format(amountFor(perf) / 100)} (${perf.audience} seats)\n';
