@@ -49,8 +49,6 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     return volumeCredits;
   }
 
-  int volumeCredits = totalVolumeCredits();
-
   for (var perf in invoice.performances) {
     totalAmount += amountFor(perf);
   }
@@ -61,7 +59,7 @@ String statement(Invoice invoice, Map<String, Play> plays) {
   }
 
   result += 'Amount owed is ${formatToUSD(totalAmount)}\n';
-  result += 'You earned $volumeCredits credits\n';
+  result += 'You earned ${totalVolumeCredits()} credits\n';
   return result;
 }
 
