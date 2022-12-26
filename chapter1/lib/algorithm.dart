@@ -43,11 +43,17 @@ String statement(Invoice invoice, Map<String, Play> plays) {
 
   for (var perf in invoice.performances) {
     volumeCredits += volumeCreditsFor(perf);
+  }
 
-    result +=
-        ' ${playFor(perf)?.name}: ${formatToUSD(amountFor(perf))} (${perf.audience} seats)\n';
+  for (var perf in invoice.performances) {
     totalAmount += amountFor(perf);
   }
+  
+  for (var perf in invoice.performances) {
+    result +=
+        ' ${playFor(perf)?.name}: ${formatToUSD(amountFor(perf))} (${perf.audience} seats)\n';
+  }
+  
   result += 'Amount owed is ${formatToUSD(totalAmount)}\n';
   result += 'You earned $volumeCredits credits\n';
   return result;
