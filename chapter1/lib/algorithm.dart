@@ -41,15 +41,20 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     return result;
   }
 
-  int volumeCredits = 0;
-  for (var perf in invoice.performances) {
-    volumeCredits += volumeCreditsFor(perf);
+  int totalVolumeCredits() {
+    int volumeCredits = 0;
+    for (var perf in invoice.performances) {
+      volumeCredits += volumeCreditsFor(perf);
+    }
+    return volumeCredits;
   }
+
+  int volumeCredits = totalVolumeCredits();
 
   for (var perf in invoice.performances) {
     totalAmount += amountFor(perf);
   }
-  
+
   for (var perf in invoice.performances) {
     result +=
         ' ${playFor(perf)?.name}: ${formatToUSD(amountFor(perf))} (${perf.audience} seats)\n';
@@ -62,5 +67,5 @@ String statement(Invoice invoice, Map<String, Play> plays) {
 
 String formatToUSD(dynamic number) {
   var formatter = NumberFormat.currency(locale: 'en-US', symbol: 'USD');
-  return formatter.format(number/ 100);
+  return formatter.format(number / 100);
 }
