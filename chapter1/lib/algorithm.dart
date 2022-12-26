@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 
 String statement(Invoice invoice, Map<String, Play> plays) {
   int totalAmount = 0;
-  int volumeCredits = 0;
+
   String result = ' Statement for ${invoice.customer}\n';
 
   Play? playFor(Performance aPerformance) => plays[aPerformance.playID];
@@ -41,6 +41,7 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     return result;
   }
 
+  int volumeCredits = 0;
   for (var perf in invoice.performances) {
     volumeCredits += volumeCreditsFor(perf);
   }
@@ -53,7 +54,7 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     result +=
         ' ${playFor(perf)?.name}: ${formatToUSD(amountFor(perf))} (${perf.audience} seats)\n';
   }
-  
+
   result += 'Amount owed is ${formatToUSD(totalAmount)}\n';
   result += 'You earned $volumeCredits credits\n';
   return result;
