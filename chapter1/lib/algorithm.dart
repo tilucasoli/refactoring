@@ -5,8 +5,7 @@ import 'package:chapter1/model/play.dart';
 import 'package:intl/intl.dart';
 
 String statement(Invoice invoice, Map<String, Play> plays) {
-  String result = ' Statement for ${invoice.customer}\n';
-
+  
   Play? playFor(Performance aPerformance) => plays[aPerformance.playID];
 
   int amountFor(Performance aPerfomance) {
@@ -54,6 +53,8 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     }
     return result;
   }
+
+  String result = ' Statement for ${invoice.customer}\n';
 
   for (var perf in invoice.performances) {
     result +=
