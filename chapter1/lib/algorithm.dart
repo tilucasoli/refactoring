@@ -47,7 +47,7 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     return volumeCredits;
   }
 
-  int xtotalAmount() {
+  int totalAmount() {
     int totalAmount = 0;
     for (var perf in invoice.performances) {
       totalAmount += amountFor(perf);
@@ -55,14 +55,12 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     return totalAmount;
   }
 
-  int totalAmount = xtotalAmount();
-
   for (var perf in invoice.performances) {
     result +=
         ' ${playFor(perf)?.name}: ${formatToUSD(amountFor(perf))} (${perf.audience} seats)\n';
   }
 
-  result += 'Amount owed is ${formatToUSD(totalAmount)}\n';
+  result += 'Amount owed is ${formatToUSD(totalAmount())}\n';
   result += 'You earned ${totalVolumeCredits()} credits\n';
   return result;
 }
