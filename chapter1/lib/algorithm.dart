@@ -86,18 +86,15 @@ class StatementData {
   });
 
   int totalVolumeCredits() {
-    int result = performances
+    return performances
         .map((e) => e.volumeCredits)
         .reduce((value, element) => value + element);
-    return result;
   }
 
   int totalAmount() {
-    int result = 0;
-    for (var perf in performances) {
-      result += perf.amount;
-    }
-    return result;
+    return performances
+        .map((e) => e.amount)
+        .reduce((value, element) => value + element);
   }
 }
 
