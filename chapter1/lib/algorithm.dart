@@ -6,15 +6,41 @@ import 'package:chapter1/model/play.dart';
 import 'package:intl/intl.dart';
 
 String statement(Invoice invoice, Map<String, Play> plays) {
+  // Nested Functions
   Play? playFor(Performance aPerformance) => plays[aPerformance.playID];
+
+  int amountFor(Performance aPerformance) {
+    int result = 0;
+
+    switch (playFor(aPerformance)?.type) {
+      case 'tragedy':
+        result = 40000;
+        if (aPerformance.audience > 30) {
+          result += 1000 * (aPerformance.audience - 30);
+        }
+        break;
+      case 'comedy':
+        result = 30000;
+        if (aPerformance.audience > 20) {
+          result += 10000 + 500 * (aPerformance.audience - 20);
+        }
+        break;
+      default:
+        result += 300 * aPerformance.audience;
+        throw Exception('unknown type: ${playFor(aPerformance)?.type}');
+    }
+    return result;
+  }
 
   PerformanceEnrich enrichPerformance(Performance aPerformance) =>
       PerformanceEnrich(
         play: playFor(aPerformance),
         audience: aPerformance.audience,
         playID: aPerformance.playID,
+        amount: amountFor(aPerformance),
       );
 
+  // Core logic
   final data = StatementData(
     customer: invoice.customer,
     performances:
@@ -25,28 +51,6 @@ String statement(Invoice invoice, Map<String, Play> plays) {
 }
 
 String renderPlainText(StatementData data, Map<String, Play> plays) {
-  int amountFor(PerformanceEnrich aPerfomance) {
-    int result = 0;
-
-    switch (aPerfomance.play?.type) {
-      case 'tragedy':
-        result = 40000;
-        if (aPerfomance.audience > 30) {
-          result += 1000 * (aPerfomance.audience - 30);
-        }
-        break;
-      case 'comedy':
-        result = 30000;
-        if (aPerfomance.audience > 20) {
-          result += 10000 + 500 * (aPerfomance.audience - 20);
-        }
-        break;
-      default:
-        result += 300 * aPerfomance.audience;
-        throw Exception('unknown type: ${aPerfomance.play?.type}');
-    }
-    return result;
-  }
 
   int volumeCreditsFor(PerformanceEnrich perf) {
     int result = 0;
@@ -66,7 +70,7 @@ String renderPlainText(StatementData data, Map<String, Play> plays) {
   int totalAmount() {
     int result = 0;
     for (var perf in data.performances) {
-      result += amountFor(perf);
+      result += perf.amount;
     }
     return result;
   }
@@ -75,7 +79,7 @@ String renderPlainText(StatementData data, Map<String, Play> plays) {
 
   for (var perf in data.performances) {
     result +=
-        ' ${perf.play?.name}: ${formatToUSD(amountFor(perf))} (${perf.audience} seats)\n';
+        ' ${perf.play?.name}: ${formatToUSD(perf.amount)} (${perf.audience} seats)\n';
   }
 
   result += 'Amount owed is ${formatToUSD(totalAmount())}\n';
@@ -102,10 +106,12 @@ class PerformanceEnrich {
   final String playID;
   final int audience;
   final Play? play;
+  final int amount;
 
   PerformanceEnrich({
     required this.playID,
     required this.audience,
     required this.play,
+    required this.amount,
   });
 }
