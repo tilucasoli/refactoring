@@ -39,8 +39,8 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     return result;
   }
 
-  PerformanceEnrich enrichPerformance(Performance aPerformance) =>
-      PerformanceEnrich(
+  PerformanceEnriched enrichPerformance(Performance aPerformance) =>
+      PerformanceEnriched(
         play: playFor(aPerformance),
         audience: aPerformance.audience,
         playID: aPerformance.playID,
@@ -49,7 +49,6 @@ String statement(Invoice invoice, Map<String, Play> plays) {
       );
 
   // Core logic
-
   final data = StatementData(
     customer: invoice.customer,
     performances:
@@ -60,12 +59,9 @@ String statement(Invoice invoice, Map<String, Play> plays) {
 }
 
 String renderPlainText(StatementData data, Map<String, Play> plays) {
-  int totalAmount(StatementData data) {
-    int result = 0;
-    for (var perf in data.performances) {
-      result += perf.amount;
-    }
-    return result;
+  String formatToUSD(dynamic number) {
+    var formatter = NumberFormat.currency(locale: 'en-US', symbol: 'USD');
+    return formatter.format(number / 100);
   }
 
   String result = ' Statement for ${data.customer}\n';
@@ -75,42 +71,45 @@ String renderPlainText(StatementData data, Map<String, Play> plays) {
         ' ${perf.play?.name}: ${formatToUSD(perf.amount)} (${perf.audience} seats)\n';
   }
 
-  result += 'Amount owed is ${formatToUSD(totalAmount(data))}\n';
+  result += 'Amount owed is ${formatToUSD(data.totalAmount())}\n';
   result += 'You earned ${data.totalVolumeCredits()} credits\n';
   return result;
 }
 
-String formatToUSD(dynamic number) {
-  var formatter = NumberFormat.currency(locale: 'en-US', symbol: 'USD');
-  return formatter.format(number / 100);
-}
-
 class StatementData {
   final String customer;
-  final List<PerformanceEnrich> performances;
+  final List<PerformanceEnriched> performances;
 
   StatementData({
     required this.customer,
     required this.performances,
   });
 
-    int totalVolumeCredits() {
+  int totalVolumeCredits() {
     int result = 0;
     for (var perf in performances) {
       result += perf.volumeCredits;
     }
     return result;
   }
+
+  int totalAmount() {
+    int result = 0;
+    for (var perf in performances) {
+      result += perf.amount;
+    }
+    return result;
+  }
 }
 
-class PerformanceEnrich {
+class PerformanceEnriched {
   final String playID;
   final int audience;
   final Play? play;
   final int amount;
   final int volumeCredits;
 
-  PerformanceEnrich({
+  PerformanceEnriched({
     required this.playID,
     required this.audience,
     required this.play,
