@@ -71,8 +71,8 @@ String renderPlainText(StatementData data, Map<String, Play> plays) {
         ' ${perf.play?.name}: ${formatToUSD(perf.amount)} (${perf.audience} seats)\n';
   }
 
-  result += 'Amount owed is ${formatToUSD(data.totalAmount())}\n';
-  result += 'You earned ${data.totalVolumeCredits()} credits\n';
+  result += 'Amount owed is ${formatToUSD(data.totalAmount)}\n';
+  result += 'You earned ${data.totalVolumeCredits} credits\n';
   return result;
 }
 
@@ -85,17 +85,13 @@ class StatementData {
     required this.performances,
   });
 
-  int totalVolumeCredits() {
-    return performances
+  int get totalVolumeCredits => performances
         .map((e) => e.volumeCredits)
         .reduce((value, element) => value + element);
-  }
 
-  int totalAmount() {
-    return performances
+  int get totalAmount => performances
         .map((e) => e.amount)
         .reduce((value, element) => value + element);
-  }
 }
 
 class PerformanceEnriched {
