@@ -86,10 +86,9 @@ class StatementData {
   });
 
   int totalVolumeCredits() {
-    int result = 0;
-    for (var perf in performances) {
-      result += perf.volumeCredits;
-    }
+    int result = performances
+        .map((e) => e.volumeCredits)
+        .reduce((value, element) => value + element);
     return result;
   }
 
