@@ -45,10 +45,11 @@ String statement(Invoice invoice, Map<String, Play> plays) {
         audience: aPerformance.audience,
         playID: aPerformance.playID,
         amount: amountFor(aPerformance),
-        totalVolumeCredits: volumeCreditsFor(aPerformance),
+        volumeCredits: volumeCreditsFor(aPerformance),
       );
 
   // Core logic
+
   final data = StatementData(
     customer: invoice.customer,
     performances:
@@ -59,16 +60,7 @@ String statement(Invoice invoice, Map<String, Play> plays) {
 }
 
 String renderPlainText(StatementData data, Map<String, Play> plays) {
-  
-  int totalVolumeCredits() {
-    int result = 0;
-    for (var perf in data.performances) {
-      result += perf.totalVolumeCredits;
-    }
-    return result;
-  }
-
-  int totalAmount() {
+  int totalAmount(StatementData data) {
     int result = 0;
     for (var perf in data.performances) {
       result += perf.amount;
@@ -83,8 +75,8 @@ String renderPlainText(StatementData data, Map<String, Play> plays) {
         ' ${perf.play?.name}: ${formatToUSD(perf.amount)} (${perf.audience} seats)\n';
   }
 
-  result += 'Amount owed is ${formatToUSD(totalAmount())}\n';
-  result += 'You earned ${totalVolumeCredits()} credits\n';
+  result += 'Amount owed is ${formatToUSD(totalAmount(data))}\n';
+  result += 'You earned ${data.totalVolumeCredits()} credits\n';
   return result;
 }
 
@@ -101,6 +93,14 @@ class StatementData {
     required this.customer,
     required this.performances,
   });
+
+    int totalVolumeCredits() {
+    int result = 0;
+    for (var perf in performances) {
+      result += perf.volumeCredits;
+    }
+    return result;
+  }
 }
 
 class PerformanceEnrich {
@@ -108,13 +108,13 @@ class PerformanceEnrich {
   final int audience;
   final Play? play;
   final int amount;
-  final int totalVolumeCredits;
+  final int volumeCredits;
 
   PerformanceEnrich({
     required this.playID,
     required this.audience,
     required this.play,
     required this.amount,
-    required this.totalVolumeCredits,
+    required this.volumeCredits,
   });
 }
