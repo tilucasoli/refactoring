@@ -32,12 +32,20 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     return result;
   }
 
+  int volumeCreditsFor(Performance perf) {
+    int result = 0;
+    result += max(perf.audience - 30, 0);
+    if ('comedy' == playFor(perf)?.type) result += (perf.audience / 5).floor();
+    return result;
+  }
+
   PerformanceEnrich enrichPerformance(Performance aPerformance) =>
       PerformanceEnrich(
         play: playFor(aPerformance),
         audience: aPerformance.audience,
         playID: aPerformance.playID,
         amount: amountFor(aPerformance),
+        totalVolumeCredits: volumeCreditsFor(aPerformance),
       );
 
   // Core logic
@@ -51,18 +59,11 @@ String statement(Invoice invoice, Map<String, Play> plays) {
 }
 
 String renderPlainText(StatementData data, Map<String, Play> plays) {
-
-  int volumeCreditsFor(PerformanceEnrich perf) {
-    int result = 0;
-    result += max(perf.audience - 30, 0);
-    if ('comedy' == perf.play?.type) result += (perf.audience / 5).floor();
-    return result;
-  }
-
+  
   int totalVolumeCredits() {
     int result = 0;
     for (var perf in data.performances) {
-      result += volumeCreditsFor(perf);
+      result += perf.totalVolumeCredits;
     }
     return result;
   }
@@ -107,11 +108,13 @@ class PerformanceEnrich {
   final int audience;
   final Play? play;
   final int amount;
+  final int totalVolumeCredits;
 
   PerformanceEnrich({
     required this.playID,
     required this.audience,
     required this.play,
     required this.amount,
+    required this.totalVolumeCredits,
   });
 }
