@@ -15,8 +15,6 @@ import 'package:intl/intl.dart';
 // [ ] - Retornar exibição do resultado no formato String
 
 String statement(Invoice invoice, Map<String, Play> plays) {
-  int totalAmount = 0;
-  int volumeCredits = 0;
   String result = ' Statement for ${invoice.customer}\n';
 
   final format = NumberFormat.currency(locale: 'en-US', symbol: 'USD');
@@ -57,8 +55,10 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     return result;
   }
 
+  int totalAmount = 0;
+  int volumeCredits = 0;
+  
   for (var perf in invoice.performances) {
-
     volumeCredits += volumeCreditsFor(perf);
 
     result +=
