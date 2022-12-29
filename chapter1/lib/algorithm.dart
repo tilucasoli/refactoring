@@ -59,9 +59,14 @@ String statement(Invoice invoice, Map<String, Play> plays) {
   int volumeCredits = 0;
 
   for (var perf in invoice.performances) {
-    volumeCredits += volumeCreditsFor(perf);
     totalAmount += amountFor(perf);
-    
+  }
+
+  for (var perf in invoice.performances) {
+    volumeCredits += volumeCreditsFor(perf);
+  }
+
+  for (var perf in invoice.performances) {
     result +=
         ' ${playFor(perf)?.name}: ${format.format(amountFor(perf) / 100)} (${perf.audience} seats)\n';
   }
