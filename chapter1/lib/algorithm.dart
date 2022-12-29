@@ -24,9 +24,8 @@ String statement(Invoice invoice, Map<String,Play> plays) {
   }
 
   for (var perf in invoice.performances) {
-    var play = playFor(perf);
     int thisAmount = 0;
-    switch (play?.type) {
+    switch (playFor(perf)?.type) {
       case 'tragedy':
         thisAmount = 40000;
         if (perf.audience > 30) {
@@ -41,14 +40,14 @@ String statement(Invoice invoice, Map<String,Play> plays) {
         break;
       default:
         thisAmount += 300 * perf.audience;
-        throw Exception('unknown type: ${play?.type}');
+        throw Exception('unknown type: ${playFor(perf)?.type}');
     }
     // add volume credits
     volumeCredits += max(perf.audience - 30, 0);
     // add extra credit for every ten comedy attendees
-    if ('comedy' == play?.type) volumeCredits += (perf.audience / 5).floor();
+    if ('comedy' == playFor(perf)?.type) volumeCredits += (perf.audience / 5).floor();
     // print line for this order
-    result += ' ${play?.name}: ${format.format(thisAmount / 100)} (${perf.audience} seats)\n';
+    result += ' ${playFor(perf)?.name}: ${format.format(thisAmount / 100)} (${perf.audience} seats)\n';
     totalAmount += thisAmount;
   }
   result += 'Amount owed is ${format.format(totalAmount / 100)}\n';
