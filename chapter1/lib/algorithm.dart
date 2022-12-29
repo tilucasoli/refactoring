@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 
 // Qual as responsabilidades da função?
 // [x] - Calcula valor por performance
-// [ ] - Calcula valor de creditos por performance
+// [x] - Calcula valor de creditos por performance
 // [ ] - Calcular o valor total da conta total
 // [ ] - Calcular o valor total de créditos
 // [ ] - Formatar exibição do resultado
@@ -47,13 +47,20 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     return result;
   }
 
-  for (var perf in invoice.performances) {
-    // add volume credits
+  int volumeCreditsFor(Performance perf) {
+    int result = max(perf.audience - 30, 0);
 
-    volumeCredits += max(perf.audience - 30, 0);
-    if ('comedy' == playFor(perf)?.type)
-      volumeCredits += (perf.audience / 5).floor();
-    
+    if ('comedy' == playFor(perf)?.type) {
+      result += (perf.audience / 5).floor();
+    }
+
+    return result;
+  }
+
+  for (var perf in invoice.performances) {
+
+    volumeCredits += volumeCreditsFor(perf);
+
     result +=
         ' ${playFor(perf)?.name}: ${format.format(amountFor(perf) / 100)} (${perf.audience} seats)\n';
     totalAmount += amountFor(perf);
