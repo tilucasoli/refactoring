@@ -63,13 +63,17 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     return result;
   }
 
-  int volumeCredits = 0;
+  int totalVolumeCredits(Invoice invoice) {
+    int result = 0;
+    for (var perf in invoice.performances) {
+    result += volumeCreditsFor(perf);
+  }
+    return result;
+  }
+
+  int volumeCredits = totalVolumeCredits(invoice);
 
   totalAmount(invoice);
-
-  for (var perf in invoice.performances) {
-    volumeCredits += volumeCreditsFor(perf);
-  }
 
   for (var perf in invoice.performances) {
     result +=
