@@ -10,37 +10,17 @@ StatementData createStatementData(Invoice invoice, Map<String, Play> plays) {
   );
 }
 
-PerformanceEnriched enrichPerformance(Performance aPerformance, Map<String, Play> plays) {
+PerformanceEnriched enrichPerformance(
+    Performance aPerformance, Map<String, Play> plays) {
   Play? playFor(Performance aPerformance) => plays[aPerformance.playID];
 
   int amountFor(Performance aPerformance) {
-    int result = 0;
-
-    switch (playFor(aPerformance)?.type) {
-      case 'tragedy':
-        result = 40000;
-        if (aPerformance.audience > 30) {
-          result += 1000 * (aPerformance.audience - 30);
-        }
-        break;
-      case 'comedy':
-        result = 30000;
-        if (aPerformance.audience > 20) {
-          result += 10000 + 500 * (aPerformance.audience - 20);
-        }
-        break;
-      default:
-        result += 300 * aPerformance.audience;
-        throw Exception('unknown type: ${playFor(aPerformance)?.type}');
-    }
-    return result;
+    return calculatorFor(playFor(aPerformance)).amount(aPerformance.audience);
   }
 
-  int volumeCreditsFor(Performance perf) {
-    int result = 0;
-    result += max(perf.audience - 30, 0);
-    if ('comedy' == playFor(perf)?.type) result += (perf.audience / 5).floor();
-    return result;
+  int volumeCreditsFor(Performance aPerformance) {
+    return calculatorFor(playFor(aPerformance))
+        .volumeCredits(aPerformance.audience);
   }
 
   return PerformanceEnriched(
@@ -50,6 +30,17 @@ PerformanceEnriched enrichPerformance(Performance aPerformance, Map<String, Play
     amount: amountFor(aPerformance),
     volumeCredits: volumeCreditsFor(aPerformance),
   );
+}
+
+Calculator calculatorFor(Play? play) {
+  switch (play?.type) {
+    case 'tragedy':
+      return TragedyCalculator();
+    case 'comedy':
+      return ComedyCalculator();
+    default:
+      throw Exception('unknown type: ${play?.type}');
+  }
 }
 
 class StatementData {
