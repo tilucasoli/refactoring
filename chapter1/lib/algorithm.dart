@@ -55,12 +55,17 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     return result;
   }
 
-  int totalAmount = 0;
+  int totalAmount(Invoice invoice) {
+    int result = 0;
+    for (var perf in invoice.performances) {
+      result += amountFor(perf);
+    }
+    return result;
+  }
+
   int volumeCredits = 0;
 
-  for (var perf in invoice.performances) {
-    totalAmount += amountFor(perf);
-  }
+  totalAmount(invoice);
 
   for (var perf in invoice.performances) {
     volumeCredits += volumeCreditsFor(perf);
@@ -71,7 +76,7 @@ String statement(Invoice invoice, Map<String, Play> plays) {
         ' ${playFor(perf)?.name}: ${format.format(amountFor(perf) / 100)} (${perf.audience} seats)\n';
   }
 
-  result += 'Amount owed is ${format.format(totalAmount / 100)}\n';
+  result += 'Amount owed is ${format.format(totalAmount(invoice) / 100)}\n';
   result += 'You earned $volumeCredits credits\n';
   return result;
 }
