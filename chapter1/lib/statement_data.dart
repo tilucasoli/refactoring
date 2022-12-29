@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:chapter1/model/invoice.dart';
 import 'package:chapter1/model/play.dart';
 import 'package:chapter1/performance_calculator.dart';
@@ -12,7 +10,7 @@ StatementData createStatementData(Map<String, Play> plays, Invoice invoice) {
     return plays[perf.playID]!;
   }
 
-  PerformanceCalculator createPerformanceCalculator(Performance perf) {
+  PerformanceCalculator calculatorFor(Performance perf) {
     switch (playFor(perf).type) {
       case 'tragedy':
         return TragedyCalculator(perf.audience);
@@ -23,29 +21,22 @@ StatementData createStatementData(Map<String, Play> plays, Invoice invoice) {
     }
   }
 
-  int amountFor(PerformanceCalculator calculator) {
-    return calculator.amount();
-  }
-
-  int volumeCreditsFor(PerformanceCalculator calculator) {
-    return calculator.volumeCredits();
-  }
-
   int totalAmount(List<Performance> performances) {
-    return performances.fold(0, (total, perf) => total + amountFor(createPerformanceCalculator(perf)));
+    return performances.fold(
+        0, (total, perf) => total + calculatorFor(perf).amount());
   }
 
   int totalVolumeCredits(List<Performance> performances) {
     return performances.fold(
-        0, (total, perf) => total + volumeCreditsFor(createPerformanceCalculator(perf)));
+        0, (total, perf) => total + calculatorFor(perf).volumeCredits());
   }
 
   PerformanceEnriched enrichPerformance(Performance perf) {
     return PerformanceEnriched(
       play: playFor(perf),
       audience: perf.audience,
-      amount: amountFor(createPerformanceCalculator(perf)),
-      volumeCredits: volumeCreditsFor(createPerformanceCalculator(perf)),
+      amount: calculatorFor(perf).amount(),
+      volumeCredits: calculatorFor(perf).volumeCredits(),
     );
   }
 
