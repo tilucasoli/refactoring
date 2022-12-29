@@ -15,7 +15,6 @@ import 'package:intl/intl.dart';
 // [ ] - Retornar exibição do resultado no formato String
 
 String statement(Invoice invoice, Map<String, Play> plays) {
-
   Play? playFor(Performance perf) {
     return plays[perf.playID];
   }
@@ -52,23 +51,24 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     return result;
   }
 
-  int totalAmount(Invoice invoice) {
-    return invoice.performances.fold(0, (total, perf) => total + amountFor(perf));
+  int totalAmount(List<Performance> performances) {
+    return performances.fold(0, (total, perf) => total + amountFor(perf));
   }
 
-  int totalVolumeCredits(Invoice invoice) {
-    return invoice.performances.fold(0, (total, perf) => total + volumeCreditsFor(perf));
+  int totalVolumeCredits(List<Performance> performances) {
+    return performances
+        .fold(0, (total, perf) => total + volumeCreditsFor(perf));
   }
 
   String result = ' Statement for ${invoice.customer}\n';
-  
+
   for (var perf in invoice.performances) {
     result +=
         ' ${playFor(perf)?.name}: ${formatToUSD(amountFor(perf))} (${perf.audience} seats)\n';
   }
 
-  result += 'Amount owed is ${formatToUSD(totalAmount(invoice))}\n';
-  result += 'You earned ${totalVolumeCredits(invoice)} credits\n';
+  result += 'Amount owed is ${formatToUSD(totalAmount(invoice.performances))}\n';
+  result += 'You earned ${totalVolumeCredits(invoice.performances)} credits\n';
   return result;
 }
 
