@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
 
 import 'package:chapter1/model/invoice.dart';
@@ -15,13 +16,23 @@ import 'package:intl/intl.dart';
 // [ ] - Retornar exibição do resultado no formato String
 
 String statement(Invoice invoice, Map<String, Play> plays) {
-  Play? playFor(Performance perf) {
-    return plays[perf.playID];
+  return renderPlainText(
+    invoice: invoice,
+    data: createStatementData(plays, invoice),
+  );
+}
+
+StatementData createStatementData(Map<String, Play> plays, Invoice invoice) {
+  Play playFor(Performance perf) {
+    if (plays[perf.playID] == null) {
+      throw Exception('unknown play type');
+    }
+    return plays[perf.playID]!;
   }
 
   int amountFor(Performance perf) {
     int result = 0;
-    switch (playFor(perf)?.type) {
+    switch (playFor(perf).type) {
       case 'tragedy':
         result = 40000;
         if (perf.audience > 30) {
@@ -44,7 +55,7 @@ String statement(Invoice invoice, Map<String, Play> plays) {
   int volumeCreditsFor(Performance perf) {
     int result = max(perf.audience - 30, 0);
 
-    if ('comedy' == playFor(perf)?.type) {
+    if ('comedy' == playFor(perf).type) {
       result += (perf.audience / 5).floor();
     }
 
@@ -56,20 +67,68 @@ String statement(Invoice invoice, Map<String, Play> plays) {
   }
 
   int totalVolumeCredits(List<Performance> performances) {
-    return performances
-        .fold(0, (total, perf) => total + volumeCreditsFor(perf));
+    return performances.fold(
+        0, (total, perf) => total + volumeCreditsFor(perf));
   }
 
+  PerformanceEnriched enrichPerformance(Performance perf) {
+    return PerformanceEnriched(
+      play: playFor(perf),
+      audience: perf.audience,
+      amount: amountFor(perf),
+      volumeCredits: volumeCreditsFor(perf),
+    );
+  }
+
+  final result = StatementData(
+    totalVolumeCredits: totalVolumeCredits(invoice.performances),
+    totalAmount: totalAmount(invoice.performances),
+    performances:
+        invoice.performances.map((e) => enrichPerformance(e)).toList(),
+  );
+  return result;
+}
+
+String renderPlainText({
+  required Invoice invoice,
+  required StatementData data,
+}) {
   String result = ' Statement for ${invoice.customer}\n';
 
-  for (var perf in invoice.performances) {
+  for (var perf in data.performances) {
     result +=
-        ' ${playFor(perf)?.name}: ${formatToUSD(amountFor(perf))} (${perf.audience} seats)\n';
+        ' ${perf.play.name}: ${formatToUSD(perf.amount)} (${perf.audience} seats)\n';
   }
 
-  result += 'Amount owed is ${formatToUSD(totalAmount(invoice.performances))}\n';
-  result += 'You earned ${totalVolumeCredits(invoice.performances)} credits\n';
+  result += 'Amount owed is ${formatToUSD(data.totalAmount)}\n';
+  result += 'You earned ${data.totalVolumeCredits} credits\n';
   return result;
+}
+
+class StatementData {
+  final int totalVolumeCredits;
+  final int totalAmount;
+  final List<PerformanceEnriched> performances;
+
+  StatementData({
+    required this.totalVolumeCredits,
+    required this.totalAmount,
+    required this.performances,
+  });
+}
+
+class PerformanceEnriched {
+  final int audience;
+  final Play play;
+  final int amount;
+  final int volumeCredits;
+
+  PerformanceEnriched({
+    required this.audience,
+    required this.play,
+    required this.amount,
+    required this.volumeCredits,
+  });
 }
 
 String formatToUSD(dynamic value) {
