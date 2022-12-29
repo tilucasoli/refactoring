@@ -17,8 +17,6 @@ import 'package:intl/intl.dart';
 String statement(Invoice invoice, Map<String, Play> plays) {
   String result = ' Statement for ${invoice.customer}\n';
 
-  final format = NumberFormat.currency(locale: 'en-US', symbol: 'USD');
-
   Play? playFor(Performance perf) {
     return plays[perf.playID];
   }
@@ -65,10 +63,15 @@ String statement(Invoice invoice, Map<String, Play> plays) {
 
   for (var perf in invoice.performances) {
     result +=
-        ' ${playFor(perf)?.name}: ${format.format(amountFor(perf) / 100)} (${perf.audience} seats)\n';
+        ' ${playFor(perf)?.name}: ${formatToUSD(amountFor(perf) / 100)} (${perf.audience} seats)\n';
   }
 
-  result += 'Amount owed is ${format.format(totalAmount(invoice) / 100)}\n';
+  result += 'Amount owed is ${formatToUSD(totalAmount(invoice) / 100)}\n';
   result += 'You earned ${totalVolumeCredits(invoice)} credits\n';
   return result;
+}
+
+String formatToUSD(dynamic value) {
+  final format = NumberFormat.currency(locale: 'en-US', symbol: 'USD');
+  return format.format(value);
 }
