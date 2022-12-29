@@ -48,13 +48,13 @@ String statement(Invoice invoice, Map<String, Play> plays) {
   }
 
   for (var perf in invoice.performances) {
-    int thisAmount = amountFor(perf);
     // add volume credits
+
     volumeCredits += max(perf.audience - 30, 0);
-    // add extra credit for every ten comedy attendees
     if ('comedy' == playFor(perf)?.type)
       volumeCredits += (perf.audience / 5).floor();
-    // print line for this order
+    
+    int thisAmount = amountFor(perf);
     result +=
         ' ${playFor(perf)?.name}: ${format.format(thisAmount / 100)} (${perf.audience} seats)\n';
     totalAmount += thisAmount;
