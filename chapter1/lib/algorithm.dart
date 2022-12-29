@@ -15,7 +15,6 @@ import 'package:intl/intl.dart';
 // [ ] - Retornar exibição do resultado no formato String
 
 String statement(Invoice invoice, Map<String, Play> plays) {
-  String result = ' Statement for ${invoice.customer}\n';
 
   Play? playFor(Performance perf) {
     return plays[perf.playID];
@@ -61,6 +60,8 @@ String statement(Invoice invoice, Map<String, Play> plays) {
     return invoice.performances.fold(0, (total, perf) => total + volumeCreditsFor(perf));
   }
 
+  String result = ' Statement for ${invoice.customer}\n';
+  
   for (var perf in invoice.performances) {
     result +=
         ' ${playFor(perf)?.name}: ${formatToUSD(amountFor(perf) / 100)} (${perf.audience} seats)\n';
